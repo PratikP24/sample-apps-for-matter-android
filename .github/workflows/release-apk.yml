@@ -38,16 +38,6 @@ jobs:
         draft: false
         prerelease: false
 
-    # - name: Upload APK files
-    #   id: upload_apk_files
-    #   run: |
-    #     for file in ${{ env.APK_FILES }}; do
-    #       echo "Uploading $file..."
-    #       gh release upload ${{ github.ref }} "$file" --clobber
-    #     done
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Upload APK files
       uses: actions/upload-release-asset@v1
       env:
