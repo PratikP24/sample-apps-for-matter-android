@@ -25,8 +25,7 @@ jobs:
       run: |
         mkdir -p release_apks 
         find . -type f -name "*.apk" -exec cp {} release_apks/ \; 
-        APK_FILES=$(find release_apks -type f -name "*.apk") 
-        echo "APK_FILES=$APK_FILES" >> $GITHUB_ENV
+        APK_FILES=$(find release_apks -type f -name "*.apk")
 
     - name: Create Release
       id: create_release
@@ -39,22 +38,32 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload APK files
-      id: upload_apk_files
-      run: |
-        for file in ${{ env.APK_FILES }}; do
-          echo "Uploading $file..."
-          gh release upload ${{ github.ref }} "$file" --clobber
-        done
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     # - name: Upload APK files
-    #   uses: actions/upload-release-asset@v1
+    #   id: upload_apk_files
+    #   run: |
+    #     for file in ${{ env.APK_FILES }}; do
+    #       echo "Uploading $file..."
+    #       gh release upload ${{ github.ref }} "$file" --clobber
+    #     done
     #   env:
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #     asset_path: ${{ env.APK_FILES }}
-    #     asset_name: $(basename ${{ env.APK_FILES }})
-    #     asset_content_type: application/vnd.android.package-archive
+
+    - name: Upload APK files
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: 'release_apks/3p-ecosystem-targetcommissioner-release-unsigned.apk'
+        asset_name: '3p-ecosystem-targetcommissioner-release-unsigned.apk'
+        asset_content_type: application/vnd.android.package-archive
+    
+      - name: Upload APK files
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: 'release_apks/3p-ecosystem-default-release-unsigned.apk'
+        asset_name: '3p-ecosystem-default-release-unsigned.apk'
+        asset_content_type: application/vnd.android.package-archive
