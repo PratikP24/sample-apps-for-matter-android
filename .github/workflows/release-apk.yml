@@ -58,7 +58,7 @@ jobs:
         asset_name: '3p-ecosystem-targetcommissioner-release-unsigned.apk'
         asset_content_type: application/vnd.android.package-archive
     
-      - name: Upload APK files
+    - name: Upload APK files
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
