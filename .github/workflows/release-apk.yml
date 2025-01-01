@@ -1,0 +1,48 @@
+name: Publish APKs
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on version tags like v1.0.0
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Set Up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: '17'
+
+    - name: Build APK
+      run: ./gradlew assembleRelease
+
+    - name: Find APK files
+      id: apkfiles
+      run: |
+        APK_FILES=$(find . -type f -name "*.apk")
+        echo "APK_FILES=$APK_FILES" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload APK files
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.APK_FILES }}
+        asset_name: $(basename ${{ env.APK_FILES }})
+        asset_content_type: application/vnd.android.package-archive
